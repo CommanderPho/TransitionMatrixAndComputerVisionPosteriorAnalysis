@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+## simulates a MC with transition matrix in 'trans', starting from 'ini'
+simMC <- function(trans, ini = 1, N) {
+  X <- rep(NA, N)
+  Pcum <- t(apply(trans, 1, cumsum))
+  X[1] <- ini 
+  for (t in 2:N) {
+    U <- runif(1)
+    X[t] <- findInterval(U, Pcum[X[t-1], ]) + 1
+  }
+  X
+}
+set.seed(1234)
+## transition matrix
+P <- matrix(c(0.1, 0.1, 0.1, 0.7,
+              0.1, 0.1, 0.6, 0.2,
+              0.1, 0.3, 0.2, 0.4,
+              0.2, 0.2, 0.3, 0.3),
+            nrow = 4, ncol = 4, byrow = TRUE)
+N <- 2000
+X <- simMC(trans = P, ini = 1, N = N)
+## it is better to work with factors
+X <- as.factor(X)
+levels(X) <- LETTERS[1:4]
+## table transitions and normalize each row
+Phat <- table(X[1:(N-1)], X[2:N])
+Phat <- sweep(x = Phat, MARGIN = 1, STATS = apply(Phat, 1, sum), FUN = "/")
+## explicit dimnames
+dimnames(Phat) <- lapply(list("X(t-1)=" ,"X(t)="),
+                         paste, sep = "", levels(as.factor(X)))
+## transition 3-fold contingency array
+P3 <- table(X[1:(N-2)], X[2:(N-1)], X[3:N])
+dimnames(P3) <- lapply(list("X(t-2)=", "X(t-1)=" ,"X(t)="),
+                       paste, sep = "", levels(as.factor(X)))
+## apply ONE indendence test 
+fisher.test(P3[ , 1, ], simulate.p.value = TRUE)
+## plot conditional distr.
+library(lattice)
+X3 <- data.frame(X = X[3:N], lag1X =  X[2:(N-1)], lag2X = X[1:(N-2)])
+histogram( ~ X | lag1X + lag2X, data = X3, col = "SteelBlue3")
+```
+```{r}
+require(markovchain)
+require(data.table)
+#Scenario 1
+#Markov Property OK (depends only on t):
+
+#Sequence generation: if t="a" use pA for sampling, if t="b" use pB for sampling
+
+pA <- c(0.7, 0.3)
+pB <- c(0.5, 0.5)
+
+sequence <- sample(c("a","b"), 1)
+
+for (i in 1:1000) {
+  if (sequence[length(sequence)] == "a") {
+    sequence <- rbind(sequence, sample(c("a","b"), 1, p=pA))
+  }
+  if (sequence[length(sequence)] == "b") {
+    sequence <- rbind(sequence, sample(c("a","b"), 1, p=pB))
+  }
+
+}
+
+verifyMarkovProperty(sequence)
+
+markovTest <- verifyMarkovProperty(sequence)
+
+testTable <- data.table(chisq=0, pval=0, state="init", reject95=FALSE, reject99=FALSE)
+
+for (i in 1:length(markovTest)) {
+  testTable <- rbind(testTable, data.table(chisq=markovTest[[i]][[1]], pval=markovTest[[i]][[3]], state=names(markovTest[i]), reject95=markovTest[[i]][[3]]<0.05, reject99=markovTest[[i]][[3]]<0.01))
+}
+
+testTable
+states
+```
+```{r}
+#Scenario 2
+#Markov Property not OK (depends on t and t-1):
+
+#Sequence generation: if t="a" and t-1="a" use pA for sampling, if t="b" and t-1="b" use pB for sampling
+
+
+pA <- c(0.7, 0.3)
+pB <- c(0.5, 0.5)
+
+sequence <- sample(c("a","b"), 1)
+sequence <- rbind(sequence, sample(c("a","b"), 1))
+
+for (i in 1:1000) {
+  if (sequence[length(sequence)-1] == "a" & sequence[length(sequence)] == "a") {
+    sequence <- rbind(sequence, sample(c("a","b"), 1, p=pA))
+  }
+  else if (sequence[length(sequence)-1] == "b" & sequence[length(sequence)] == "b") {
+    sequence <- rbind(sequence, sample(c("a","b"), 1, p=pB))
+  }
+ else sequence <- rbind(sequence, sample(c("a","b"), 1)) 
+}
+
+verifyMarkovProperty(sequence)
+
+markovTest <- verifyMarkovProperty(sequence)
+
+testTable <- data.table(chisq=0, pval=0, state="init", reject95=FALSE, reject99=FALSE)
+
+for (i in 1:length(markovTest)) {
+  testTable <- rbind(testTable, data.table(chisq=markovTest[[i]][[1]], pval=markovTest[[i]][[3]], state=names(markovTest[i]), reject95=markovTest[[i]][[3]]<0.05, reject99=markovTest[[i]][[3]]<0.01))
+}
+
+testTable
+states
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
