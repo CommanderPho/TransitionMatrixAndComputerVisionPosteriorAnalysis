@@ -2,6 +2,15 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../Matlab-Pho-Helper-Tools"
+		},
+		{
+			"path": "../../matlab-to-neuropy-exporter"
+		},
+		{
+			"path": "../../PhoPyMatlabConverter"
 		}
 	],
 	"settings": {

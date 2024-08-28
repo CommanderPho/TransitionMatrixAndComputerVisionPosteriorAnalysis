@@ -1,4 +1,4 @@
-function [BW, maskedImage, blurredImg] = fn_segimg_replay_connect(X, sigma)
+function [BW, maskedImage, blurredImg] = fn_segimg_replay_connect(X, sigma, radius, decomposition)
 %segmentImage Segment image using auto-generated code from Image Segmenter app
 %  [BW,MASKEDIMAGE] = segmentImage(X) segments image X using auto-generated
 %  code from the Image Segmenter app. The final segmentation is returned in
@@ -31,14 +31,14 @@ if ((n_light_elements / total_n_elements) > 0.5)
 end
 
 % Dilate mask with disk
-radius = 4;
-decomposition = 6;
+% radius = 4;
+% decomposition = 6;
 se = strel('disk', radius, decomposition);
 BW = imdilate(BW, se);
 
 % Close mask with disk
-radius = 4;
-decomposition = 6;
+% radius = 4;
+% decomposition = 6;
 se = strel('disk', radius, decomposition);
 BW = imclose(BW, se);
 
