@@ -51,6 +51,12 @@ parameters.decomposition = 6;
 parameters.sigma = 59; % You can adjust the sigma value
 % parameters.sigma = [10, 59]; % You can adjust the sigma value
 
+% Size-normalized:
+size_normalized_parameters.radius = 4/449;
+%size_normalized_parameters.decomposition = 6;
+%size_normalized_parameters.sigma = 59; % You can adjust the sigma value
+size_normalized_parameters.sigma = [59/1024, 59/449]; % You can adjust the sigma value
+
 % Ripples:
 %parameters.radius = 4;
 %parameters.decomposition = 6;
@@ -60,11 +66,20 @@ parameters.sigma = 59; % You can adjust the sigma value
 %lap_to_ripple_size_ratio = [1.0000,	0.3185];
 
 
-% Ripples:
-parameters.radius = round(parameters.radius * min(lap_to_ripple_size_ratio));
+% % Ripples:
+% parameters.radius = round(parameters.radius * min(lap_to_ripple_size_ratio));
+% %parameters.decomposition = round(parameters.decomposition * min(lap_to_ripple_size_ratio)); % ALWAYS needs to be 6, the connectivity to use
+% % parameters.sigma = round(parameters.sigma * min(lap_to_ripple_size_ratio));
+% parameters.sigma = parameters.sigma * min(lap_to_ripple_size_ratio);
+
+
+% Size-normalized:
+parameters.radius = round(size_normalized_parameters.radius * min(a_shape));
 %parameters.decomposition = round(parameters.decomposition * min(lap_to_ripple_size_ratio)); % ALWAYS needs to be 6, the connectivity to use
 % parameters.sigma = round(parameters.sigma * min(lap_to_ripple_size_ratio));
-parameters.sigma = parameters.sigma * min(lap_to_ripple_size_ratio);
+parameters.sigma = size_normalized_parameters.sigma .* a_shape;
+
+results.parameters = parameters;
 
 % Adjust data to span data range.
 im = imadjust(im);
