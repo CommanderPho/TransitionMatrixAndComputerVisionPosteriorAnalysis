@@ -1,4 +1,4 @@
-function [BW, maskedImage, blurredImg] = fn_segimg_replay_connect(X)
+function [BW, maskedImage, blurredImg] = fn_segimg_replay_connect(X, sigma)
 %segmentImage Segment image using auto-generated code from Image Segmenter app
 %  [BW,MASKEDIMAGE] = segmentImage(X) segments image X using auto-generated
 %  code from the Image Segmenter app. The final segmentation is returned in
@@ -8,11 +8,10 @@ function [BW, maskedImage, blurredImg] = fn_segimg_replay_connect(X)
 %----------------------------------------------------
 
 % Apply Gaussian blur with a specified sigma (standard deviation)
-sigma = 59; % You can adjust the sigma value
 blurredImg = imgaussfilt(X, sigma);
 
 % Adjust data to span data range.
-X = imadjust(X);
+blurredImg = imadjust(blurredImg);
 
 % Auto clustering
 s = rng;
@@ -20,6 +19,16 @@ rng('default');
 L = imsegkmeans(single(blurredImg),2,'NumAttempts',2);
 rng(s);
 BW = L == 2;
+
+% Ensure high-probability is the forground (== 1), if not invert mask
+n_light_elements = sum(BW, 'all');
+total_n_elements = prod(size(BW), 'all');
+
+if ((n_light_elements / total_n_elements) > 0.5)
+    % if there are more light (forground) elements than dark (background)
+    % elements, invert the mask
+    BW = imcomplement(BW); % invert the mask
+end
 
 % Dilate mask with disk
 radius = 4;
@@ -34,7 +43,8 @@ se = strel('disk', radius, decomposition);
 BW = imclose(BW, se);
 
 % Create masked image.
-maskedImage = X;
+maskedImage = blurredImg;
 maskedImage(~BW) = 0;
+
 end
 

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"extensions": {
+		"recommendations": [
+			"mathworks.language-matlab",
+			"apommel.matlab-interactive-terminal"
+		]
+	}
+}

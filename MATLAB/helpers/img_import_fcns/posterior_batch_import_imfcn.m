@@ -32,22 +32,39 @@ end
 
 % Replace the sample below with your code----------------------------------
 
+% Adjust data to span data range.
+im = imadjust(im);
 imgray = im2gray(im);
-
 bw = imbinarize(imgray);
-
-% [results.maxEig, results.ridges] = ridgefilt(imgray, 1, 2, 0.5);
+% bw = imcomplement(bw);
 
 results.imgray = imgray;
 results.bw     = bw;
 
-[BW, maskedImage] = fn_segimg_replay_connect(imgray);
+%% Processing:
+
+% [results.maxEig, results.ridges] = ridgefilt(imgray, 1, 2, 0.5);
+sigma = 59; % You can adjust the sigma value
+% sigma = [10, 59]; % You can adjust the sigma value
+[BW, maskedImage, blurredImg] = fn_segimg_replay_connect(imgray, sigma);
 % results.seg.bw = BW;
 % results.seg.maskedImage = maskedImage;
 
 results.seg_bw = BW;
 results.seg_maskedImage = maskedImage;
+results.blurredImg = blurredImg;
 
+results.E = IM.get_ellipse(BW);                % Compute the equivalent ellipse
+% expand the .E struct and add fields to results
+fields = fieldnames(results.E);
+for i = 1:numel(fields)
+    results.(fields{i}) = results.E.(fields{i});
+end
+
+% Draw the ellipse overlaying the image:
+%figure; imshow(BW)
+%hold on
+%IM.draw_ellipse(E, 'elements', {'ellipse','major','minor','semimajor','direction'}) % , 'color', 'm'
 
 % results.maxEig = maxEig;
 % results.ridges = ridges;

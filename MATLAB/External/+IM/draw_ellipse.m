@@ -12,6 +12,7 @@ function OUT = draw_ellipse(E, varargin)
 %       - 'minor'
 %       - 'semimajor'
 %       - 'direction'
+%       , 'elements', {'ellipse','major','minor','semimajor','direction'}
 %
 %   IM.DRAW_ELLIPSE(..., 'Property', P) applies pairs of properties to the
 %   displayed ellipse. All properties of the plot group are applicable.
