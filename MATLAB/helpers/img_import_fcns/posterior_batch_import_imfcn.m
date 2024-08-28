@@ -31,6 +31,40 @@ if nargin == 2
 end
 
 % Replace the sample below with your code----------------------------------
+%radius = 4;
+%decomposition = 6;
+%sigma = 59; % You can adjust the sigma value
+% sigma = [10, 59]; % You can adjust the sigma value
+
+
+a_shape = size(im);
+
+ex_lap_sizes = [1024, 449];
+ex_ripple_sizes = [1024, 143];
+
+ex_lap_to_ripple_size_ratio = ex_ripple_sizes ./ ex_lap_sizes;
+lap_to_ripple_size_ratio = ex_lap_to_ripple_size_ratio .* a_shape;
+
+% Laps:
+parameters.radius = 4;
+parameters.decomposition = 6;
+parameters.sigma = 59; % You can adjust the sigma value
+% parameters.sigma = [10, 59]; % You can adjust the sigma value
+
+% Ripples:
+%parameters.radius = 4;
+%parameters.decomposition = 6;
+%parameters.sigma = 59; % You can adjust the sigma value
+% sigma = [10, 59]; % You can adjust the sigma value
+
+%lap_to_ripple_size_ratio = [1.0000,	0.3185];
+
+
+% Ripples:
+parameters.radius = round(parameters.radius * min(lap_to_ripple_size_ratio));
+%parameters.decomposition = round(parameters.decomposition * min(lap_to_ripple_size_ratio)); % ALWAYS needs to be 6, the connectivity to use
+% parameters.sigma = round(parameters.sigma * min(lap_to_ripple_size_ratio));
+parameters.sigma = parameters.sigma * min(lap_to_ripple_size_ratio);
 
 % Adjust data to span data range.
 im = imadjust(im);
@@ -44,12 +78,8 @@ results.bw = bw;
 %% Processing:
 
 % [results.maxEig, results.ridges] = ridgefilt(imgray, 1, 2, 0.5);
-sigma = 59; % You can adjust the sigma value
-% sigma = [10, 59]; % You can adjust the sigma value
-[BW, maskedImage, blurredImg] = fn_segimg_replay_connect(imgray, sigma);
-% results.seg.bw = BW;
-% results.seg.maskedImage = maskedImage;
-
+% [BW, maskedImage, blurredImg] = fn_segimg_replay_connect(imgray, sigma, radius, decomposition);
+[BW, maskedImage, blurredImg] = fn_segimg_replay_connect(imgray, parameters.sigma, parameters.radius, parameters.decomposition);
 results.seg_bw = BW;
 results.seg_maskedImage = maskedImage;
 results.blurredImg = blurredImg;
