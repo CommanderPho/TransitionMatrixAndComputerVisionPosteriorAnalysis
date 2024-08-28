@@ -4,7 +4,32 @@
 			"path": "."
 		}
 	],
-	"settings": {},
+	"settings": {
+
+		"workbench.colorCustomizations": {
+			"editor.lineHighlightBackground": "#1073cf2d",
+			"editor.lineHighlightBorder": "#9fced11f",
+			"activityBar.background": "#4b2923",
+			"titleBar.activeBackground": "#e77653", // hue-red
+			"titleBar.activeForeground": "#000000",
+			"scrollbarSlider.background": "#ff880057",  // hue-red
+			"scrollbarSlider.hoverBackground": "#ff000082",  // hue-red
+			"scrollbarSlider.activeBackground": "#ff0040df",  // hue-red
+			"activityBar.inactiveForeground": "#ffffff3c",
+			"activityBar.foreground": "#ffffff",
+			"notebook.outputContainerBackgroundColor": "#395a3e50",
+			"notebook.outputContainerBorderColor": "#ff1010",  // hue-red
+			"notebook.focusedCellBorder": "#ff0000da",  // hue-red
+			"notebook.focusedEditorBorder": "#ff0015",  // hue-red
+			"notebook.inactiveFocusedCellBorder": "#ff000063",  // hue-red
+			"titleBar.inactiveBackground": "#c778538e",  // hue-red
+			"tab.activeBorder": "#2F3C2E",
+			"statusBar.background": "#3c2e2e",
+			"statusBar.foreground": "#ffffff"
+		},
+
+
+	},
 	"extensions": {
 		"recommendations": [
 			"mathworks.language-matlab",

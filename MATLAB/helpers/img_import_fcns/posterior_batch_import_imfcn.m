@@ -39,7 +39,7 @@ bw = imbinarize(imgray);
 % bw = imcomplement(bw);
 
 results.imgray = imgray;
-results.bw     = bw;
+results.bw = bw;
 
 %% Processing:
 
